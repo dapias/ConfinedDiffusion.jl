@@ -1,7 +1,9 @@
 include("./particleandboundaries.jl")
 
+srand(456)
+
 p = Particle([0.,0.], [0.,0.])
-nsteps = 10000
+nsteps = 1000000
 Dx = 1.
 Dy = 1.
 l = 0.8
@@ -21,4 +23,4 @@ for i in 2:nsteps
     positions[i,:] = p.r 
 end
 
-
+positions
