@@ -4,7 +4,7 @@ using PyPlot
 s1 = h5open("../data/1000particless=1.0.hdf5","r")
 s2 = h5open("../data/1000particless=2.0.hdf5","r")
 s3 = h5open("../data/1000particless=3.0.hdf5","r")
-free = h5open("../data/1000free.hdf5","r")
+free = h5open("../data/1000particlesfree.hdf5","r")
 straight = h5open("../data/1000particlesstraight.hdf5","r")
 
 xs1 = read(s1, "xsquare")
