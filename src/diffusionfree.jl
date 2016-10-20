@@ -2,7 +2,7 @@ include("../src/particleandboundaries.jl")
 
 importall Objects
 
-function diffusionstraight(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64)
+function diffusionfree(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64)
 
     positions = zeros(nsteps,2, nparticles)
     temporary = zeros(nsampling,2)
@@ -28,6 +28,8 @@ function diffusionstraight(nparticles::Int64, nsteps::Int64, nsampling::Int64, d
         end
         println("Particle $j done")
     end
+
+    return positions
 end
 
 

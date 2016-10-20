@@ -28,6 +28,8 @@ function diffusiongaussian(nparticles::Int64, nsteps::Int64, nsampling::Int64, d
         end
         println("Particle $j done")
     end
+
+    return positions
 end
 
 

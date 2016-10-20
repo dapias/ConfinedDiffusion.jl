@@ -1,9 +1,21 @@
 include("../src/diffusionfree.jl")
 
+
 using HDF5
+using YAML
+
+parameters = YAML.load(open("parameterssimulation.yaml"))
+
+nparticles = parameters["nparticles"]
+nsteps = parameters["nsteps"]
+nsampling = parameters["nsampling"]
+dt = parameters["dt"]
+Dx = parameters["Dx"]
+Dy = parameters["Dy"]
+
+positions = diffusionfree(nparticles, nsteps, nsampling, dt, Dx, Dy)
 
 xarray = positions[:,1,:]
-
 xsquare = [mean(xarray[i,:].^2) for i in 1:length(xarray[:,1])]
 xmean =  [mean(xarray[i,:]) for i in 1:length(xarray[:,1])]
 
