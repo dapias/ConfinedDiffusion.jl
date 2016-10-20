@@ -1,3 +1,6 @@
+module Objects
+export Particle, boundary1, boundary2
+
 using NLsolve
 
 type Particle{T}
@@ -15,7 +18,7 @@ function boundary2(p :: Particle; lambda = 0.8, sigma = 0.1)
     function gaussian(x)
         1.0 + lambda*exp(-x^2/(2*sigma^2))
     end
-
+    
     function slope(particle::Particle)
         (particle.r[2] - particle.rprevious[2])/(particle.r[1] - particle.rprevious[1])
     end
@@ -41,8 +44,7 @@ function boundary2(p :: Particle; lambda = 0.8, sigma = 0.1)
         g =  gaussian(x)
         if yn[end] < g
             n = norm([xn[end] - x, yn[end] - g] )
-            xunit, yunit = x + (xn[end] - x)/n  , g + (yn[end] - g)/n 
-        else
+            xunit, yunit = x + (xn[end] - x)/n  , g + (yn[end] - g)/n         else
             n = norm([xn[1] - x, yn[1] - g] )
             xunit, yunit = (xn[1] -x)/n +x , (yn[1] -g)/n + g
         end
@@ -51,17 +53,22 @@ function boundary2(p :: Particle; lambda = 0.8, sigma = 0.1)
 
     function newvector(particle::Particle, intersection::Vector{Float64}, n::Vector{Float64})
         particle.r - 2*(dot((particle.r - intersection), n))*n
-    end
-     
+    end 
 
     if p.r[2] > gaussian(p.r[1])
-        slo = slope(p)
-        zeroes(x, fvec) = f!(x, fvec, m = slo)
-        sol = nlsolve(zeroes, [p.r[1]])
-        xsol = sol.zero[1]
-        ysol = gaussian(xsol)
-        unitario = unitnormalvector(xsol)
-        p.r= newvector(p,[xsol, ysol], [unitario[1] - xsol, unitario[2] - ysol])
+        if abs(p.r[1]) .> 5*sigma
+            y = 1.0 - (p.r[2] - 1.0)
+            p.r[2] = y
+        else
+            slo = slope(p)
+            zeroes(x, fvec) = f!(x, fvec, m = slo)
+            sol = nlsolve(zeroes, [p.r[1]])
+            xsol = sol.zero[1]
+            ysol = gaussian(xsol)
+            unitario = unitnormalvector(xsol)
+            p.r= newvector(p,[xsol, ysol], [unitario[1] - xsol, unitario[2] - ysol])
+        end
     end
+end
 
 end
