@@ -28,27 +28,13 @@ function boundary2(p :: Particle; lambda = 0.8, sigma = 0.1)
         fvec[1] = 1. + lambda*exp(-x[1]^2/(2*sigma^2)) - m*(x[1] - p.rprevious[1]) - p.rprevious[2] 
     end
 
-    function normalslope(x)
-        sigma^2/(lambda*x)*exp(x^2/(2*sigma^2))
-    end
-
-    function normal(x)
-        deltax = 1.0
-        xpoints = collect(linspace(x-deltax,x+deltax,10))
-        ypoints = normalslope(x)*(xpoints - x) + gaussian(x)
-        return xpoints, ypoints
+    function slopeboundary(x)
+        -x/sigma^2.*lambda*exp(-x^2./(2*sigma^2))
     end
 
     function unitnormalvector(x)
-        xn,yn = normal(x)
-        g =  gaussian(x)
-        if yn[end] < g
-            n = norm([xn[end] - x, yn[end] - g] )
-            xunit, yunit = x + (xn[end] - x)/n  , g + (yn[end] - g)/n         else
-            n = norm([xn[1] - x, yn[1] - g] )
-            xunit, yunit = (xn[1] -x)/n +x , (yn[1] -g)/n + g
-        end
-        [xunit, yunit]
+        y=  gaussian(x)
+        n = [slopeboundary(x), -1.]/sqrt(1. + slopeboundary(x)^2.)
     end
 
     function newvector(particle::Particle, intersection::Vector{Float64}, n::Vector{Float64})
@@ -66,7 +52,7 @@ function boundary2(p :: Particle; lambda = 0.8, sigma = 0.1)
             xsol = sol.zero[1]
             ysol = gaussian(xsol)
             unitario = unitnormalvector(xsol)
-            p.r= newvector(p,[xsol, ysol], [unitario[1] - xsol, unitario[2] - ysol])
+            p.r= newvector(p,[xsol, ysol], unitario)
         end
     end
 end
