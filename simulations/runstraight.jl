@@ -18,7 +18,16 @@ xarray = positions[:,1,:]
 xsquare = [mean(xarray[i,:].^2) for i in 1:length(xarray[:,1])]
 xmean =  [mean(xarray[i,:]) for i in 1:length(xarray[:,1])]
 
-file = h5open("../data/$(nparticles)particlesstraight.hdf5", "w")
+try
+    mkdir("../data/straight/")
+end
+
+try
+    mkdir("../data/straight/nsteps=$(nsteps)dt=$dt/")
+end
+
+filename = randstring(4)
+file = h5open("../data/straight/nsteps=$(nsteps)dt=$dt/$(filename).hdf5", "w")
 
 attrs(file)["dt"] = dt
 attrs(file)["Dx"] = Dx

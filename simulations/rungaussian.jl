@@ -16,11 +16,22 @@ s = parameters["s"]
 
 positions = diffusiongaussian(nparticles, nsteps, nsampling, dt, Dx, Dy, l, s)
 
-xarray = positions[:,1,:]
-xsquare = [mean(xarray[i,:].^2) for i in 1:length(xarray[:,1])]
-xmean =  [mean(xarray[i,:]) for i in 1:length(xarray[:,1])]
+#xarray = positions[:,1,:]
+#xsquare = [mean(xarray[i,:].^2) for i in 1:length(xarray[:,1])]
+#xmean =  [mean(xarray[i,:]) for i in 1:length(xarray[:,1])]
 
-file = h5open("../data/$(nparticles)particless=$s.hdf5", "w")
+
+try
+    mkdir("../data/gaussian/")
+end
+
+try
+    mkdir("../data/gaussian/sigma=$(s)lambda=$l/")
+end
+
+filename = randstring(4)
+file = h5open("../data/gaussian/sigma=$(s)lambda=$l/$(filename).hdf5", "w")
+
 
 attrs(file)["dt"] = dt
 attrs(file)["Dx"] = Dx
@@ -32,9 +43,9 @@ attrs(file)["nsampling"] = nsampling
 attrs(file)["nsteps"] = nsteps
 
 file["positions"] = positions
-file["xsquare"] = xsquare
-file["xmean"] = xmean
+#file["xsquare"] = xsquare
+#file["xmean"] = xmean
 
 close(file)
 
-println("File $(nparticles)particless=$s.hdf5 succesfully generated. See file in ../data/")
+println("File /gaussian/sigma=$(s)lambda=$l/$(filename).hdf5 succesfully generated. See file in ../data/")
