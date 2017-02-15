@@ -38,7 +38,7 @@ type Boundary
     
 end
 
-function celldifferencenumber(p :: Particle, sigma::Float64)
+function cellchange(p :: Particle, sigma::Float64)
 
     function cell(r::Array{Float64,1})
         if -pi/(2*sigma) < r[1] < 3*pi/(2*sigma)
@@ -72,7 +72,7 @@ end
 function boundarysine(p :: Particle, b::Boundary, sigma::Float64)
     if  incell(p, b)
         if (p.rprevious[2] > 1.-b.lambda) && (p.r[2] > 1.- b.lambda)  #If it crosses the wall with a tunneling-like effect
-            if celldifferencenumber(p) >= 1
+            if cellchange(p, sigma) >= 1
                 p.r = p.rprevious  #Rejection method
             end
         end
@@ -99,39 +99,49 @@ function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::F
 
     shape(s) = x->sin(s*x)
     b = Boundary(shape(sigma), lambda)
-    
-    positions = zeros(nsteps,2, nparticles)
-    temporary = zeros(nsampling,2)
 
-    
-    for j in 1:nparticles
-        p = Particle([0.,0.], [0.,0.])
-        positions[1,:,j] = p.r
+    xpositions = zeros(nsteps, nparticles)
+    xpositions[:,1] = singleparticle(nsteps, nsampling, dt, Dx, Dy, sigma, b)
+    println("Particle 1 done")
 
-        for i in 2:nsteps
-            for k in 1:nsampling
-                if k ==1
-                    p.rprevious =   positions[i-1,:,j]
-                    temporary[k,:] = p.rprevious
-                else
-                    p.rprevious =   temporary[k-1,:]
-                end
-                # p.rprevious = positions[i-1,:,j]
-                p.r += sqrt(2*dt)*[sqrt(Dx)*randn(), sqrt(Dy)*randn()]
-                boundarysine(p, b, sigma)
-                boundary1(p, b)
-                temporary[k,:] = p.r
-            end
-            positions[i,:,j] = p.r 
+    try
+        for j in 2:nparticles
+            xpositions[:,j] = singleparticle(nsteps, nsampling, dt, Dx, Dy, sigma, b)
+            println("Particle $j done")
         end
-        println("Particle $j done")
+        return xpositions
+    catch y
+        if isa(y, InterruptException)
+            return xpositions
+        end
     end
-
-    return positions
-
-
 end
 
+function singleparticle(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, sigma::Float64, b::Boundary)
+
+    positions = zeros(nsteps,2) #I am just interested in x-positions
+    temporary = zeros(nsampling,2)
+
+    p = Particle([0.,0.], [0.,0.])
+    positions[1,:] = p.r
+
+    for i in 2:nsteps
+        for k in 1:nsampling
+            if k ==1
+                p.rprevious =   positions[i-1,:]
+                temporary[k,:] = p.rprevious
+            else
+                p.rprevious =   temporary[k-1,:]
+                end
+            p.r += sqrt(2*dt)*[sqrt(Dx)*randn(), sqrt(Dy)*randn()]
+            boundarysine(p, b, sigma)
+            boundary1(p, b)
+            temporary[k,:] = p.r
+        end
+        positions[i,:] = p.r 
+    end
+    xpositions = positions[:,1]
+end
 
 function straightlineparticle(p::Particle)
     f(x) = (p.r[2] - p.rprevious[2])/(p.r[1] - p.rprevious[1])*(x - p.r[1]) + p.r[2]
