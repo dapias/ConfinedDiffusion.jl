@@ -38,34 +38,26 @@ type Boundary
     
 end
 
-function previouscelda(p :: Particle, sigma::Float64)
+function celldifferencenumber(p :: Particle, sigma::Float64)
 
-    if -pi/(2*sigma) < p.rprevious[1] < 3*pi/(2*sigma)
-        prevcelda = 0
-    elseif p.rprevious[1] > 3*pi/(2*sigma)
-        a = p.rprevious[1] - 3*pi/(2*sigma)
-        prevcelda = Int(div(a,(2*pi/sigma)) + 1)
-    else
-        a = abs(p.rprevious[1] + pi/(2*sigma))
-        prevcelda = Int(div(a, (2*pi/sigma))*(-1) -1)
+    function cell(r::Array{Float64,1})
+        if -pi/(2*sigma) < r[1] < 3*pi/(2*sigma)
+            cellnumber = 0
+        elseif r[1] > 3*pi/(2*sigma)
+            a = r[1] - 3*pi/(2*sigma)
+            cellnumber = div(a,(2*pi/sigma)) + 1  #2pi/sigma is the period of the wall
+        else 
+            a = r[1] + pi/(2*sigma)
+            cellnumber = div(a, (2*pi/sigma)) - 1
+        end
+        cellnumber
     end
-    
-    prevcelda
-end
 
-function currentcelda(p :: Particle, sigma::Float64)
+    prevcell = cell(p.rprevious)
+    currentcell = cell(p.r)
 
-    if -pi/(2*sigma) < p.r[1] < 3*pi/(2*sigma)
-        celda = 0
-    elseif p.r[1] > 3*pi/(2*sigma)
-        a = p.r[1] - 3*pi/(2*sigma)
-        celda = Int(div(a,(2*pi/sigma)) + 1)
-    else
-        a = p.r[1] + pi/(2*sigma)
-        celda = Int(div(a, (2*pi/sigma)) -1)
-    end
-    
-    celda
+    return abs(currentcell - prevcell)
+
 end
 
 function incell(p::Particle, b::Boundary)
@@ -77,49 +69,16 @@ function incell(p::Particle, b::Boundary)
 end
 
 
-
-
-function straightlineparticle(p::Particle)
-    f(x) = (p.r[2] - p.rprevious[2])/(p.r[1] - p.rprevious[1])*(x - p.r[1]) + p.r[2]
-end
-
-function reflectingboundaries!(p::Particle, b::Boundary)
-    intersection(x) = b.shape(x) - straightlineparticle(p)(x)
-    xint = fzero(intersection,[p.r[1], p.rprevious[1]])
-    yint = b.shape(xint)
-    rint = p.r - [xint, yint]
-    tanvector = dot(rint, b.tangent(xint))*b.tangent(xint)
-    norvector = -dot(rint, b.normal(xint))*b.normal(xint) ##Minus to change the sign of the normal vector
-#    p.rprevious = [xint, yint]  #This was thinking when multiple reflections were allowed
-    p.r = [xint, yint] + tanvector + norvector
-end
-
 function boundarysine(p :: Particle, b::Boundary, sigma::Float64)
-    
     if  incell(p, b)
-        if (p.rprevious[2] > 1.-b.lambda) && (p.r[2] > 1.- b.lambda)
-            prevcelda = previouscelda(p, sigma)
-            currcelda = currentcelda(p, sigma)
-            if abs(currcelda - prevcelda) >= 1
-                #reflectingboundaries!(p, b)
-                #if !incell(p,b)
-                    p.r = p.rprevious
-                #end
+        if (p.rprevious[2] > 1.-b.lambda) && (p.r[2] > 1.- b.lambda)  #If it crosses the wall with a tunneling-like effect
+            if celldifferencenumber(p) >= 1
+                p.r = p.rprevious  #Rejection method
             end
-            #if abs(currcelda - prevcelda) >= 1
-            #   println("$p ,abs(currcelda - )")  ##Checar qué es mejor
-            #  error("Movimiento no permitido")
-            #        end
         end
     else
-        reflectingboundaries!(p, b)
-        if !incell(p,b)
-            p.r = p.rprevious
-        end
-        #while !incell(p,b)
-        #   println("I am within a loop")
-        #  p.r += randn()*b.normal(p.r[1])
-        #end
+        #        reflectingboundaries!(p, b)
+        p.r = p.rprevious
     end
 end    
 
@@ -161,10 +120,6 @@ function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::F
                 p.r += sqrt(2*dt)*[Dx*randn(), Dy*randn()]
                 boundarysine(p, b, sigma)
                 boundary1(p, b)
-                #if !incell(p,b)
-                #   println("$p ,out of cell after boundary straight")
-                #   error("Movimiento no permitido")
-                #end
                 temporary[k,:] = p.r
             end
             positions[i,:,j] = p.r 
@@ -177,3 +132,18 @@ function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::F
 
 end
 
+
+function straightlineparticle(p::Particle)
+    f(x) = (p.r[2] - p.rprevious[2])/(p.r[1] - p.rprevious[1])*(x - p.r[1]) + p.r[2]
+end
+
+function reflectingboundaries!(p::Particle, b::Boundary)
+    intersection(x) = b.shape(x) - straightlineparticle(p)(x)
+    xint = fzero(intersection,[p.r[1], p.rprevious[1]])
+    yint = b.shape(xint)
+    rint = p.r - [xint, yint]
+    tanvector = dot(rint, b.tangent(xint))*b.tangent(xint)
+    norvector = -dot(rint, b.normal(xint))*b.normal(xint) ##Minus to change the sign of the normal vector
+#    p.rprevious = [xint, yint]  #This was thinking when multiple reflections were allowed
+    p.r = [xint, yint] + tanvector + norvector
+end
