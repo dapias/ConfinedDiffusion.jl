@@ -117,7 +117,7 @@ function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::F
                     p.rprevious =   temporary[k-1,:]
                 end
                 # p.rprevious = positions[i-1,:,j]
-                p.r += sqrt(2*dt)*[Dx*randn(), Dy*randn()]
+                p.r += sqrt(2*dt)*[sqrt(Dx)*randn(), sqrt(Dy)*randn()]
                 boundarysine(p, b, sigma)
                 boundary1(p, b)
                 temporary[k,:] = p.r
