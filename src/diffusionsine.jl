@@ -143,6 +143,23 @@ function singleparticle(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float6
     xpositions = positions[:,1]
 end
 
+function rms(positions::Array{Float64,2}, nsampling::Int64, dt::Float64)
+    xsq = positions.^2
+    nsteps = length(positions[:,1])
+    nparticles = length(positions[1,:])
+
+    t = 0.0:nsampling*dt:nsampling*dt*(nsteps-1)
+    t = collect(t)
+
+    xsquare = [mean(xsq[i,:]) for i in 1:nsteps]
+#    xmean = [mean(positions[i,:]) for i in 1:nsteps]
+
+    D = (xsquare)./(2*t)
+
+    return t, D
+
+end
+
 function straightlineparticle(p::Particle)
     f(x) = (p.r[2] - p.rprevious[2])/(p.r[1] - p.rprevious[1])*(x - p.r[1]) + p.r[2]
 end
@@ -157,3 +174,14 @@ function reflectingboundaries!(p::Particle, b::Boundary)
 #    p.rprevious = [xint, yint]  #This was thinking when multiple reflections were allowed
     p.r = [xint, yint] + tanvector + norvector
 end
+
+nsteps = 1000
+nsampling = 1000
+nparticles = 70000
+Dx = Dy = 1.
+dt = 5.e-3
+lambda = 0.1
+sigma = 1.0
+
+pos = diffusionsine(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, sigma)
+t,D =  rms(pos, nsampling, dt)
