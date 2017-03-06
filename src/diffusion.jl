@@ -35,7 +35,7 @@ function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::F
 
     try
         for j in 2:nparticles
-            xpositions[:,j] = singleparticle(nsteps, nsampling, dt, Dx, Dy, sigma, b)
+            xpositions[:,j] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, sigma, b)
             println("Particle $j done")
         end
         return xpositions
@@ -65,13 +65,4 @@ function rms(positions::Array{Float64,2}, nsampling::Int64, dt::Float64)
 end
 
 
-# nsteps = 1000
-# nsampling = 1000
-# nparticles = 70000
-# Dx = Dy = 1.
-# dt = 5.e-3
-# lambda = 0.1
-# sigma = 9.0
 
-# pos = diffusionsine(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, sigma)
-# t,D =  rms(pos, nsampling, dt)
