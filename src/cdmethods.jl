@@ -31,7 +31,7 @@ end
 
 function boundary(p :: Particle, b::Boundary, sigma::Float64)
     if  incell(p, b)
-        if (p.rprevious[2] > 1.- b.lambda) && (p.r[2] > 1.- b.lambda)  #If it crosses the wall with a tunneling-like effect
+        if (p.rprevious[2] > L - b.lambda) && (p.r[2] > L - b.lambda)  #If it crosses the wall with a tunneling-like effect
             if cellchange(p, sigma) >= 1
                 p.r = p.rprevious  #Rejection method
             end

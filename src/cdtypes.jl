@@ -1,3 +1,5 @@
+const L = 1.0
+
 type Particle{T}
     r::Array{T,1}
     rprevious::Array{T,1}
@@ -8,7 +10,7 @@ type Boundary
     lambda::Float64
         
     function Boundary(shape, lambda)
-        s(x) = 1. + lambda*shape(x)
+        s(x) = L + lambda*shape(x)
         new(s,lambda)
     end
 end
