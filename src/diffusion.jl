@@ -26,7 +26,7 @@ end
 
 function diffusion(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, sigma::Float64, shape::Function)
 
-    b = Boundary(shape(sigma), lambda)
+    b = Boundary(shape, lambda)
 
     xpositions = zeros(nsteps, nparticles)
     xpositions[:,1] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, sigma, b)
