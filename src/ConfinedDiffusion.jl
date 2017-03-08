@@ -7,7 +7,7 @@ import ForwardDiff.derivative
 using Roots
 using HDF5
 
-export diffusionsine, rms, savedata, Parameters
+export diffusion, rms, savedata, Parameters
 
 include("cdtypes.jl")
 include("cdmethods.jl")

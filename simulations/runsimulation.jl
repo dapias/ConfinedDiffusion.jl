@@ -5,7 +5,7 @@ using ConfinedDiffusion
 
 filename = "pruebasigma$(sigma)lambda$(lambda)"
 
-pos = diffusionsine(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, sigma)
+pos = diffusion(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, sigma, shape)
 
 t,D =  rms(pos, nsampling, dt)
 

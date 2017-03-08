@@ -24,9 +24,8 @@ function singletrajectory(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Floa
 end
 
 
-function diffusionsine(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, sigma::Float64)
+function diffusion(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, sigma::Float64, shape::Function)
 
-    shape(s) = x->sin(s*x)
     b = Boundary(shape(sigma), lambda)
 
     xpositions = zeros(nsteps, nparticles)
