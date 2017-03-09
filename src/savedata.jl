@@ -7,6 +7,7 @@ function writeattributes(file, p::Parameters)
     attrs(file)["dt"] = p.dt
     attrs(file)["lambda"] = p.lambda
     attrs(file)["sigma"] = p.sigma
+    attrs(file)["L"] = p.L
 end
 
 function savedata(filename::String, p::Parameters,positions::Array, t::Array, D::Array)

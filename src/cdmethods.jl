@@ -29,7 +29,7 @@ function incell(p::Particle, b::Boundary)
     end
 end
 
-function boundary(p :: Particle, b::Boundary, sigma::Float64)
+function boundary(p :: Particle, b::Boundary, sigma::Float64, L::Float64)
     if  incell(p, b)
         if (p.rprevious[2] > L - b.lambda) && (p.r[2] > L - b.lambda)  #If it crosses the wall with a tunneling-like effect
             if cellchange(p, sigma) >= 1
