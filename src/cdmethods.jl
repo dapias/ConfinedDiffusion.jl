@@ -29,7 +29,7 @@ function incell(p::Particle, b::Boundary)
     end
 end
 
-function boundary(p :: Particle, b::Boundary, sigma::Float64, L::Float64)
+function boundary(p :: Particle, b::Boundary)
     if  !incell(p, b)
         p.r = p.rprevious
     end

@@ -15,7 +15,7 @@ function singletrajectory(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Floa
                 p.rprevious =   temporary[k-1,:]
             end
             p.r += sqrt(2*dt)*[sqrt(Dx)*randn(), sqrt(Dy)*randn()]
-            boundary(p, b, sigma, L)
+            boundary(p, b)
             temporary[k,:] = p.r
         end
         positions[i,:] = p.r 
