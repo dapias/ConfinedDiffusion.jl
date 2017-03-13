@@ -30,14 +30,20 @@ function incell(p::Particle, b::Boundary)
 end
 
 function boundary(p :: Particle, b::Boundary, sigma::Float64, L::Float64)
-    if  incell(p, b)
-        if (p.rprevious[2] > L - b.lambda) && (p.r[2] > L - b.lambda)  #If it crosses the wall with a tunneling-like effect
-            if cellchange(p, sigma) >= 1
-                p.r = p.rprevious  #Rejection method
-            end
-        end
-    else
+    if  !incell(p, b)
         p.r = p.rprevious
     end
 end    
+
+# function boundary(p :: Particle, b::Boundary, sigma::Float64, L::Float64)
+#     if  incell(p, b)
+#         if (p.rprevious[2] > L - b.lambda) && (p.r[2] > L - b.lambda)  #If it crosses the wall with a tunneling-like effect
+#             if cellchange(p, sigma) >= 1
+#                 p.r = p.rprevious  #Rejection method
+#             end
+#         end
+#     else
+#         p.r = p.rprevious
+#     end
+# end    
 
