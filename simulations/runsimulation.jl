@@ -3,9 +3,10 @@ include("parameters.jl")
 
 using ConfinedDiffusion
 
-filename = "pruebasigma$(sigma)lambda$(lambda)"
+filename = "prueba"
+#filename = "straight100"
 
-pos = diffusion(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, sigma, shape, L)
+pos = diffusion(nparticles, nsteps, nsampling, dt, Dx, Dy, lambda, shape, L)
 
 t,D =  rms(pos, nsampling, dt)
 

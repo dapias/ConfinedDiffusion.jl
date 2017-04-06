@@ -36,6 +36,7 @@ function singletrajectory(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Floa
 end
 
 
+
 function diffusion(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, shape::Function, L::Float64)
 
     b = Boundary(shape, lambda, L)
