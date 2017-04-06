@@ -10,7 +10,6 @@ using HDF5
 export diffusion, rms, savedata, Parameters
 
 include("cdtypes.jl")
-include("cdmethods.jl")
 include("diffusion.jl")
 include("savedata.jl")
 
