@@ -7,12 +7,12 @@ function incell(p::Particle, b::Boundary)
 end
 
 
-function singletrajectory(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, b::Boundary)
+function singletrajectory(nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, b::Boundary, x0::Float64, y0::Float64)
 
     positions = zeros(nsteps,2) 
     temporary = zeros(nsampling,2)
 
-    p = Particle([0.,0.], [0.,0.])
+    p = Particle([x0,y0], [x0,y0])
     positions[1,:] = p.r
 
     for i in 2:nsteps
@@ -37,17 +37,17 @@ end
 
 
 
-function diffusion(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, shape::Function, L::Float64)
+function diffusion(nparticles::Int64, nsteps::Int64, nsampling::Int64, dt::Float64, Dx::Float64, Dy::Float64, lambda::Float64, shape::Function, L::Float64, x0::Float64, y0::Float64)
 
     b = Boundary(shape, lambda, L)
 
     xpositions = zeros(nsteps, nparticles)
-    xpositions[:,1] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, b)
+    xpositions[:,1] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, b, x0, y0)
     println("Particle 1 done")
 
     try
         for j in 2:nparticles
-            xpositions[:,j] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, b)
+            xpositions[:,j] = singletrajectory(nsteps, nsampling, dt, Dx, Dy, b, x0, y0)
             println("Particle $j done")
         end
         return xpositions

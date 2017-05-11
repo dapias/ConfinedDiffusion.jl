@@ -25,5 +25,7 @@ type Parameters
     lambda::Float64
     sigma::Float64
     L::Float64
+    x0::Float64
+    y0::Float64
 end
 

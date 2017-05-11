@@ -8,6 +8,8 @@ function writeattributes(file, p::Parameters)
     attrs(file)["lambda"] = p.lambda
     attrs(file)["sigma"] = p.sigma
     attrs(file)["L"] = p.L
+    attrs(file)["x0"] = p.x0
+    attrs(file)["y0"] = p.y0
 end
 
 function savedata(filename::String, p::Parameters,positions::Array, t::Array, D::Array)
@@ -19,12 +21,16 @@ function savedata(filename::String, p::Parameters,positions::Array, t::Array, D:
     writeattributes(file,p)
 
     file["positions"] = positions
-    deff = hcat(t,D)
-    file["Deff"] = deff
+    d = hcat(t,D)
+    file["D"] = d
+
+    attrs(file)["Deff"] = mean(D[end-100:end])
 
     close(file)
 
     println("Filename ../data/$(filename).hdf5 created")
+
+   
 
 end
 
